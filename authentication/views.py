@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .serializers import RegisterSerializer,LoginUserSerializer
+from .serializers import RegisterSerializer,LoginUserSerializer,FollowUserSerializer,UserProfileSerializer
 from rest_framework import status,permissions
 from rest_framework.exceptions import ValidationError
 import time
@@ -61,5 +61,55 @@ class GetUserData(APIView):
         user = request.user
         serializer = LoginUserSerializer(user)
         return Response(serializer.data)
+    
+
+class SearchUser(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self,request):
+        data = request.data
+        search_name = data.get('search_name')
+        if search_name:
+            searched_users = User.objects.filter(username__contains = search_name)
+            serializer = FollowUserSerializer(searched_users, many=True)
+            return Response(serializer.data)
+        else:
+            return Response([])
+        
+
+class UpdateProfilePicture(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self,request):
+        user = request.user
+        data = request.data
+        profile_url = data.get('profile_url')
+        user.profile_picture = profile_url
+        user.save()
+        return Response({'url': profile_url})
+    
+
+class GetProfileData(APIView):
+    def post(self,request):
+        data = request.data
+        username = data.get('username')
+        user = User.objects.get(username = username)
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data)
+    
+
+class UpdateProfile(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    def post(self,request):
+        user = request.user
+        data = request.data
+        username = data.get('username')
+        email = data.get('email')
+        try:
+            user.username = username
+            user.email = email
+            user.save()
+            return Response({'response':'updated','status':True})
+        except:
+            return Response({'response':'username or email already taken','status':False})
+        
 
 

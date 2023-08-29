@@ -28,9 +28,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Example for development
-]
+CORS_ORIGIN_ALLOW_ALL=True
+
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000", # Example for development
+# ]
 
 AUTH_USER_MODEL = "authentication.CustomUser"
 
@@ -48,7 +50,12 @@ INSTALLED_APPS = [
     "authentication.apps.AuthenticationConfig",
     'rest_framework',
     'rest_framework_simplejwt',
-    'corsheaders'
+    'corsheaders',
+    "posts.apps.PostsConfig",
+    'likes.apps.LikesConfig',
+    'followers.apps.FollowersConfig',
+    'comments.apps.CommentsConfig',
+    'stories.apps.StoriesConfig'
 ]
 
 MIDDLEWARE = [
@@ -145,9 +152,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler'
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
 }
