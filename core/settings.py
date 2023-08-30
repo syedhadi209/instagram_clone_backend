@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,6 +38,17 @@ CORS_ORIGIN_ALLOW_ALL=True
 
 AUTH_USER_MODEL = "authentication.CustomUser"
 
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
+
+CELERY_BROKER_URL = 'amqp://localhost'  # Example for RabbitMQ
+CELERY_RESULT_BACKEND = 'django-db'
+
+CELERY_BEAT_SCHEDULE = {
+    'delete-expired-stories': {
+        'task': 'stories.tasks.delete_expired_stories',
+        'schedule': crontab(minute=0),  # Run daily at midnight
+    },
+}
 
 
 # Application definition
@@ -55,8 +68,12 @@ INSTALLED_APPS = [
     'likes.apps.LikesConfig',
     'followers.apps.FollowersConfig',
     'comments.apps.CommentsConfig',
-    'stories.apps.StoriesConfig'
+    'stories.apps.StoriesConfig',
+    'django.contrib.sites',
+    'django_celery_results',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

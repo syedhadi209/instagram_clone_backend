@@ -19,8 +19,7 @@ class MyUserManager(BaseUserManager):
 
     def create_superuser(self, email,username, first_name, password=None):
         """
-        Creates and saves a superuser with the given email, date of
-        birth and password.
+        Creates and saves a superuser with the given email and password.
         """
         user = self.model(
             email=self.normalize_email(email),
