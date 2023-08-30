@@ -1,8 +1,0 @@
-version: "3.3"
-
-services:
-  web:
-    build: .
-    volumes:
-      - .:/instagram_clone
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
